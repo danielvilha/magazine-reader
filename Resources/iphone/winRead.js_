@@ -1,0 +1,299 @@
+function createThumbnailViewer(props) {
+
+	var that = {};
+
+	var news = "book/stCar-Ed_009/";
+	var news_tn = "book/stCar-Ed_009_tn/";
+	// Ler o diretório "book"
+	var bookRepository = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory + news).getDirectoryListing();
+	var bookRepository_tn = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory + news_tn).getDirectoryListing();
+
+	var hidden = false;
+
+	var bookWindow = Titanium.UI.createWindow({
+		backgroundColor : '#333',
+		navBarHidden : true
+	});
+
+	var flexSpace = Ti.UI.createButton({
+		systemButton : Ti.UI.iPhone.SystemButton.FLEXIBLE_SPACE
+	});
+
+	var titleLabel = Ti.UI.createLabel({
+		text : props.title,
+		font : {
+			fontSize : 20,
+			fontWeight : 'bold'
+		},
+		color : '#ffffff',
+		textAlign : 'center',
+		width : 400,
+	});
+
+	var topToolbar = Titanium.UI.iOS.createToolbar({
+		top : 0,
+		borderTop : false,
+		borderBottom : true,
+		translucent : false,
+		backgroundColor : 'black',
+		barColor : '#000',
+		zIndex : 50
+	});
+
+	topToolbar.hide();
+
+	bookWindow.add(topToolbar);
+
+	that.window = bookWindow;
+	//-----------------------------------------------------------------------------------------------------------------------------//
+	//                                                                                                                             //
+	//********************************************BLOCO DE CÓDIGOS DA REVISTA******************************************************//
+	//                                                                                                                             //
+	//-----------------------------------------------------------------------------------------------------------------------------//
+	var bookPages = [];
+	var scrollableView = Titanium.UI.createScrollableView({
+		layout : 'center'
+	});
+
+	that.book = Titanium.UI.createScrollView({
+		maxZoomScale : 3.0,
+		minZoomScale : 1.0,
+		disableBounce : true,
+		layout : 'center',
+		x : 0,
+		y : 0
+	});
+
+	// Passar por todos os arquivos no repositório
+	for (var file in bookRepository) {
+
+		// Define o tipo de arquivo que vai ler
+		if (bookRepository[file].split(".")[1] === "jpg") {
+			bookPages.push(Titanium.UI.createImageView({
+				image : news + bookRepository[file]
+			}));
+		};
+		// Depurar informações
+		// Ti.API.info('file name = ' + bookRepository[file].split(".")[0] + "." + bookRepository[file].split(".")[1]);
+	};
+
+	scrollableView.views = bookPages;
+
+	that.book.addEventListener('doubletap', function(e) {
+		if (that.book.zoomScale === 1.0) {
+			that.book.zoomScale = 3.0;
+			Ti.API.info('x: ' + e.x + ' y: ' + e.y);
+		} else {
+			that.book.zoomScale = 1.0;
+			Ti.API.info('x: ' + e.x + ' y: ' + e.y);
+		}
+	});
+	
+	var i;
+	var activeView = bookPages;
+
+	scrollableView.addEventListener('scrollEnd', function(e) {
+		// Ti.API.info('y: ' + that.book.contentOffset.y, ' x: ' + that.book.contentOffset.x);
+		activeView = e.views;
+		// the object handle to the view that is about to become visible
+		i = e.currentPage;
+		// scrollableView.scrollToView(i + 1);
+		Titanium.API.info("scroll called - current index " + i + ' active view ' + activeView);
+	});
+
+	that.book.add(scrollableView);
+
+	// Construção do THAT
+	that.window.add(that.book);
+	//-----------------------------------------------------------------------------------------------------------------------------//
+	//                                                                                                                             //
+	//*******************************************BLOCO DE CÓDIGOS DO THUMBNAIL*****************************************************//
+	//                                                                                                                             //
+	//-----------------------------------------------------------------------------------------------------------------------------//
+	var bookContainer = Titanium.UI.createScrollView({
+		backgroundImage : 'linen_texture_dark@2x.png',
+		top : '85%',
+		width : '95%',
+		height : '25%',
+		disableBounce : true
+	});
+
+	bookContainer.hide();
+
+	var imageDim = 140;
+	var leftOffset = 95;
+	var pageSize = bookRepository_tn.length;
+	for (var i = 0; i < pageSize; i++) {
+		var photoView = Ti.UI.createImageView({
+			image : news_tn + bookRepository_tn[i],
+			index : i,
+			top : 0,
+			left : leftOffset,
+			height : imageDim,
+			width : imageDim,
+		});
+		photoView.addEventListener('click', function(i) {
+			// Ti.API.info(i.source.image);
+			// Ti.API.info(i.source.index);
+			Ti.API.info(i);
+			var e = i.source.index;
+			scroll(e);
+		});
+		bookContainer.add(photoView);
+		leftOffset += imageDim - 15;
+		if (pageSize === pageSize) {
+			photoView.right = 95;
+		}
+	}
+	var scroll = function(e) {
+		scrollableView.scrollToView(e);
+	};
+
+	bookWindow.add(bookContainer);
+	//-----------------------------------------------------------------------------------------------------------------------------//
+	//                                                                                                                             //
+	//********************************************BLOCO DE CÓDIGOS DOS BOTÕES******************************************************//
+	//                                                                                                                             //
+	//-----------------------------------------------------------------------------------------------------------------------------//
+
+	// Botão Back
+	var backButton = Ti.UI.createButton({
+		title : "Edições",
+		style : Ti.UI.iPhone.SystemButtonStyle.DONE,
+		zIndex : 9
+	});
+	backButton.addEventListener("click", function() {
+		Ti.UI.currentWindow.close();
+	});
+	//-----------------------------------
+
+	//Botão avançar ao final do THUMBNAIL
+	var nextFastButton = Ti.UI.createButton({
+		backgroundImage : 'nextFastButton.png',
+		width : 40,
+		height : 60,
+		bottom : 0,
+		right : 0
+	});
+	nextFastButton.addEventListener('click', function() {
+		bookContainer.scrollToBottom();
+	});
+	//-----------------------------------
+
+	//Botão voltar ao inicio do THUMBNAIL
+	var previousFastButton = Ti.UI.createButton({
+		backgroundImage : 'previousFastButton.png',
+		width : 40,
+		height : 60,
+		bottom : 0,
+		left : 0
+	});
+	previousFastButton.addEventListener('click', function() {
+		bookContainer.scrollTo(0, 0);
+	});
+	//-----------------------------------
+
+	//Botão voltar uma página
+	var previousButton = Ti.UI.createButton({
+		backgroundImage : 'previousButton.png',
+		width : 30,
+		height : 68,
+		bottom : 60,
+		left : 0
+	});
+	previousButton.addEventListener('click', function() {
+		if (scrollableView.currentPage === 0) {
+			scrollableView.scrollToView(0);
+		} else {
+			scrollableView.scrollToView(scrollableView.currentPage - 1);
+		}
+	});
+	//-----------------------------------
+
+	//Botão avança uma página
+	var nextButton = Ti.UI.createButton({
+		backgroundImage : 'nextButton.png',
+		width : 30,
+		height : 68,
+		bottom : 60,
+		right : 0
+	});
+	nextButton.addEventListener('click', function() {
+		if (scrollableView.currentPage === pageSize) {
+			scrollableView.scrollToView(pageSize);
+		} else {
+			scrollableView.scrollToView(scrollableView.currentPage + 1);
+		}
+	});
+	//-----------------------------------
+
+	var labelContainer = Ti.UI.createView({
+		width : 100,
+		height : 20
+	});
+
+	var label = Ti.UI.createLabel({
+		color : '#fff'
+	});
+
+	labelContainer.add(label);
+
+	previousButton.hide();
+	nextButton.hide();
+	previousFastButton.hide();
+	nextFastButton.hide();
+
+	topToolbar.items = [backButton, flexSpace, titleLabel, flexSpace];
+	bookWindow.add(previousButton);
+	bookWindow.add(nextButton);
+	bookWindow.add(previousFastButton);
+	bookWindow.add(nextFastButton);
+	//-----------------------------------------------------------------------------------------------------------------------------//
+	//                                                                                                                             //
+	//***********************************************BLOCO DE CÓDIGOS FUNÇÕES******************************************************//
+	//                                                                                                                             //
+	//-----------------------------------------------------------------------------------------------------------------------------//
+
+	that.book.addEventListener('singletap', function() {
+		if (hidden === false) {
+			previousButton.hide();
+			nextButton.hide();
+			previousFastButton.hide();
+			nextFastButton.hide();
+			bookContainer.hide();
+			topToolbar.hide();
+
+			hidden = true;
+		} else {
+			previousButton.show();
+			nextButton.show();
+			previousFastButton.show();
+			nextFastButton.show();
+			bookContainer.show();
+			topToolbar.show();
+
+			hidden = false;
+		}
+	});
+
+	return that;
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------//
+//                                                                                                                             //
+//*****************************************************************************************************************************//
+//                                                                                                                             //
+//-----------------------------------------------------------------------------------------------------------------------------//
+var thumbnailViewer = createThumbnailViewer({
+	title : 'Edição 1'
+});
+
+var navGroup = Ti.UI.iPhone.createNavigationGroup({
+	window : thumbnailViewer.window
+});
+
+var main = Ti.UI.createWindow();
+main.add(navGroup);
+main.open();
+
+// thumbnailViewer.start();

@@ -1,0 +1,127 @@
+Titanium.UI.iPad.statusBarStyle = Titanium.UI.iPhone.StatusBar.TRANSLUCENT_BLACK;
+Titanium.UI.setBackgroundColor('##747170');
+
+var tabGroup = Titanium.UI.createTabGroup();
+
+var win = Titanium.UI.createWindow({
+	title : String.fromCharCode(178), //'Edição 1',
+	navBarHidden : true,
+	tabBarHidden : true,
+	barColor : 'black'
+});
+
+var hidden = false;
+
+var buttonRead = Ti.UI.createButton({
+	title : 'Ler esta Edição',
+	// left : 20,
+	top : '50%'
+});
+
+buttonRead.addEventListener('click', function() {
+
+	// this sets the background color of the master UIView (when there are no windows/tab groups on it)
+	Titanium.UI.setBackgroundColor('#fff');
+
+	var ui = {
+		home : {}
+	};
+
+	// Iniciar a construção da UI
+	ui.home.window = Titanium.UI.createWindow({
+		navBarHidden : true,
+		leftNavButton : true
+	});
+
+	var hidden = false;
+
+	var bookRepository = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory + "book/ed_001").getDirectoryListing();
+	var bookView = []
+
+	var scrollableView = Ti.UI.createScrollableView({
+		// touchEnabled : true,
+		// currentPage : 0,
+		bottom : 0,
+		left : 0,
+		right : 0,
+		top : '75%',
+		zIndex : 9
+	});
+
+	var scrollView = Titanium.UI.createScrollView({
+		contentWidth : 'auto',
+		contentHeight : 'auto',
+		top : '75%',
+		bottom : 0,
+		backgroundColor : '#1F1E1F',
+		showVerticalScrollIndicator : true,
+		showHorizontalScrollIndicator : true
+	});
+
+	for (var file in bookRepository) {
+
+		if (bookRepository[file].split(".")[1] === "jpg") {
+			bookView.push(Titanium.UI.createImageView({
+				image : "book/ed_001/" + bookRepository[file]
+			}));
+		};
+	};
+
+	scrollableView.views = bookView;
+	scrollView = scrollableView;
+
+	ui.home.window.add(scrollView);
+
+	// ui.home.window.addEventListener('click', function() {
+	// if (!scrollView.hide()) {
+	// scrollView.show();
+	// } else {
+	// scrollView.hide();
+	// }
+	// });
+
+	ui.home.book = Titanium.UI.createScrollableView({
+		showPagingControl : false
+	});
+
+	ui.home.init = function() {
+
+		// Ler o diretório "book"
+		var bookRepository = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory + "book/ed_001").getDirectoryListing();
+		var bookPages = [];
+
+		// Passar por todos os arquivos no repositório
+		for (var file in bookRepository) {
+
+			// Define o tipo de arquivo que vai ler
+			if (bookRepository[file].split(".")[1] === "jpg") {
+				bookPages.push(Titanium.UI.createWebView({
+					url : "book/ed_001/" + bookRepository[file]
+				}));
+			};
+
+			// Depurar informações
+			Ti.API.info('file name = ' + bookRepository[file].split(".")[0] + "." + bookRepository[file].split(".")[1]);
+		};
+
+		ui.home.book.views = bookPages;
+
+		// Construção da UI
+		ui.home.window.add(ui.home.book);
+		ui.home.window.open();
+
+	};
+
+	// Inicia a Aplicação
+	ui.home.init();
+
+});
+
+var tab = Titanium.UI.createTab({
+	window : win
+});
+
+win.add(buttonRead);
+tab.add(win);
+tabGroup.addTab(tab);
+tabGroup.open();
