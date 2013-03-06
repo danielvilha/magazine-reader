@@ -2,7 +2,7 @@ var self = Titanium.UI.currentWindow;
 self.orientationModes = [Ti.UI.PORTRAIT];
 
 var Compression = require('ti.compression');
-var source = 'https://dl.dropbox.com/u/19460864/app-revista/data1.zip';
+var source = 'https://dl.dropbox.com/u/19460864/app-revista/data5.zip';
 
 //-----------------------------------------------------------------------------------------------------------------
 

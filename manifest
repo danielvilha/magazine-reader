@@ -1,8 +1,9 @@
-#appname:Book Reader
-#publisher:DanielVilha
-#url:http://www.facebook.com/daniel.vilha
-#image:appicon.png
-#appid:com.megamidia.BookReader
-#desc:not specified
-#type:ipad
-#guid:6a28d2b4-32eb-4e11-a00f-d133476003e4
+#appname: Magazine Reader
+#appid: com.megamidia.MagazineReader
+#type: mobile
+#guid: 71483258-1538-4aa8-a9db-0f47d7a988ce
+#version: 1.0
+#publisher: not specified
+#url: not specified
+#image: appicon.png
+#desc: not specified

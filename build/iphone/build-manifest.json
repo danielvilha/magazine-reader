@@ -1,0 +1,23 @@
+{
+	"target": "simulator",
+	"deployType": "development",
+	"deviceFamily": "ipad",
+	"iosSdkPath": "/Users/danielvilha/Library/Application Support/Titanium/mobilesdk/osx/3.0.2.GA/iphone",
+	"appGuid": "71483258-1538-4aa8-a9db-0f47d7a988ce",
+	"tiCoreHash": "fa476584d63923183b326150e75416b3",
+	"modulesHash": "cbb5169ab80ab275a7d8ac47d6da6849",
+	"nativeModulesHash": "9946a88273b42085102e2e32af84f02c",
+	"gitHash": "5a77fe7",
+	"name": "Magazine Reader",
+	"id": "com.megamidia.MagazineReader",
+	"analytics": true,
+	"publisher": "danielvilha",
+	"url": "http://www.megamidia.com.br",
+	"version": "1.0",
+	"description": "not specified",
+	"copyright": "2013 by danielvilha",
+	"guid": "71483258-1538-4aa8-a9db-0f47d7a988ce",
+	"skipJSMinification": false,
+	"forceCopy": false,
+	"forceCopyAll": false
+}

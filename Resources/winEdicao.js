@@ -44,7 +44,8 @@ function winEdicao() {
 	var img = [];
 
 	var dir = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory + "files");
-	path = dir.resolve();
+	path = Ti.Filesystem.applicationDataDirectory + "files";
+	
 	var file = Titanium.Filesystem.getFile(path, "edicao.json");
 
 	if (file.exists()) {
@@ -68,20 +69,18 @@ function winEdicao() {
 		y : 0
 	});
 
-	
-
 	// Passar por todos os arquivos no repositório
 	for (var i = 0; i < data.length; i++) {
 		var imgApp = data[i].imagem_app;
 		imgApp = imgApp.split("/");
 		imgApp.reverse();
-		
+
 		// Ti.API.info(path + "/" + imgApp[0]);
 
 		img.push(Titanium.UI.createImageView({
 			image : path + "/" + imgApp[0]
 		}));
-		
+
 		Ti.API.info(img[i].image);
 	};
 
